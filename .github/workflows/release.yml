@@ -1,0 +1,39 @@
+name: release
+
+on:
+  release:
+    types: published
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Get tag name
+        id: tag
+        run: echo ::set-output name=result::$(echo $GITHUB_REF | cut -d/ -f3)
+
+      - name: Build Python 3.7 on Alpine 3.8
+        run: |
+          docker build . -f Dockerfile.python3.7-alpine3.8 -t python3.7-alpine3.8
+      - name: Extract Python 3.7 on Alpine 3.8
+        run: |
+          docker run -v $(pwd):/extract --rm python3.7-alpine3.8 cp /asset.tar.gz /extract/sensu-python-runtime_${{ steps.tag.outputs.result }}_python-3.7_alpine-3.8_linux_amd64.tar.gz
+      - name: Upload Python 3.7 on Alpine 3.8
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: sensu-python-runtime_${{ steps.tag.outputs.result }}_python-3.7_alpine-3.8_linux_amd64.tar.gz application/x-tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate SHA512 sums
+        run: |
+          shasum -a 512 *.tar.gz > sensu-python-runtime_${{ steps.tag.outputs.result }}_sha512-checksums.txt
+      - name: Upload SHA512 sums
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: sensu-python-runtime_${{ steps.tag.outputs.result }}_sha512-checksums.txt text/plain
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
