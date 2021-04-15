@@ -1,0 +1,13 @@
+FROM alpine:3.12
+
+WORKDIR /workdir
+
+COPY --from=python:3.7-alpine3.12 /lib /workdir/lib
+COPY --from=python:3.7-alpine3.12 /usr/lib /workdir/lib
+COPY --from=python:3.7-alpine3.12 /usr/local/lib /workdir/lib
+
+COPY --from=python:3.7-alpine3.12 /usr/local/include /workdir/include
+
+COPY --from=python:3.7-alpine3.12 /usr/local/bin/python /workdir/bin/python
+
+RUN tar cfz /asset.tar.gz .

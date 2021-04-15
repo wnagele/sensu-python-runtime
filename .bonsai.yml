@@ -11,3 +11,13 @@ builds:
       -  "entity.system.platform == 'alpine'"
       -  "entity.system.platform_version.split('.')[0] == '3'"
       -  "entity.system.platform_version.split('.')[1] == '8'"
+  - platform: "alpine"
+    arch: "amd64"
+    asset_filename: "#{repo}_#{version}_python-3.7_alpine-3.12_linux_amd64.tar.gz"
+    sha_filename: "#{repo}_#{version}_sha512-checksums.txt"
+    filter:
+      -  "entity.system.os == 'linux'"
+      -  "entity.system.arch == 'amd64'"
+      -  "entity.system.platform == 'alpine'"
+      -  "entity.system.platform_version.split('.')[0] == '3'"
+      -  "entity.system.platform_version.split('.')[1] == '12'"

@@ -28,6 +28,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build Python 3.7 on Alpine 3.12
+        run: |
+          docker build . -f Dockerfile.python3.7-alpine3.12 -t python3.7-alpine3.12
+      - name: Extract Python 3.7 on Alpine 3.12
+        run: |
+          docker run -v $(pwd):/extract --rm python3.7-alpine3.12 cp /asset.tar.gz /extract/sensu-python-runtime_${{ steps.tag.outputs.result }}_python-3.7_alpine-3.12_linux_amd64.tar.gz
+      - name: Upload Python 3.7 on Alpine 3.12
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: sensu-python-runtime_${{ steps.tag.outputs.result }}_python-3.7_alpine-3.12_linux_amd64.tar.gz application/x-tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Generate SHA512 sums
         run: |
           shasum -a 512 *.tar.gz > sensu-python-runtime_${{ steps.tag.outputs.result }}_sha512-checksums.txt
